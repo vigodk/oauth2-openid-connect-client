@@ -310,8 +310,9 @@ class OpenIDConnectProvider extends GenericProvider
         }
 
         // Validate scopes
-        $scopesSupported = $response["scopes_supported"];
-        if(isset($scopesSupported)) {
+        $scopesSupported = $response["scopes_supported"] ?? null;
+
+        if($scopesSupported) {
             foreach($options['scopes'] as $scope) {
                 if(!in_array($scope, $scopesSupported)) {
                     throw new InvalidConfigurationException(
@@ -339,9 +340,17 @@ class OpenIDConnectProvider extends GenericProvider
 
         // We will only need signature keys supported by our signer
         $jwks = array_filter($jwksResponse['keys'], function($jwk) {
-            if(!is_array($jwk)) return false;
-            if(isset($jwk['use']) && $jwk['use'] !== 'sig') return false;
-            if($jwk['alg'] !== $this->signer->getAlgorithmId()) return false;
+            if (!is_array($jwk)) {
+                return false;
+            }
+
+            if (isset($jwk['use']) && $jwk['use'] !== 'sig') {
+                return false;
+            }
+
+            if (isset($jwk['alg']) && $jwk['alg'] !== $this->signer->getAlgorithmId()) {
+                return false;
+            }
 
             return true;
         });
