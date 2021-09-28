@@ -6,9 +6,9 @@ This package uses the PHP League's [OAuth2 Client](https://github.com/thephpleag
 
 The following versions of PHP are supported.
 
-* PHP 5.5
 * PHP 5.6
-* PHP 7.0
+* PHP 7.0-7.4
+* PHP 8.0
 
 ## Usage
 You may test your OpenID Connect Client against [bshaffer's demo oauth2 server](https://github.com/bshaffer/oauth2-demo-php).
@@ -18,16 +18,22 @@ $signer   = new \Lcobucci\JWT\Signer\Rsa\Sha256();
 $provider = new \OpenIDConnectClient\OpenIDConnectProvider([
         'clientId'                => 'demoapp',   
         'clientSecret'            => 'demopass',  
-        // the issuer of the identity token (id_token) this will be compared with what is returned in the token.
-        'idTokenIssuer'           => 'brentertainment.com',
         // Your server
-        'redirectUri'             => 'http://example.com/your-redirect-url/',                
+        'redirectUri'             => 'http://example.com/your-redirect-url/',
+        
+        // Settings of the OP (OpenID provider)
+        // The issuer of the identity token (id_token) this will be compared with what is returned in the token.
+        'idTokenIssuer'           => 'brentertainment.com',                
         'urlAuthorize'            => 'http://brentertainment.com/oauth2/lockdin/authorize',
         'urlAccessToken'          => 'http://brentertainment.com/oauth2/lockdin/token',
         'urlResourceOwnerDetails' => 'http://brentertainment.com/oauth2/lockdin/resource',                
         // Find the public key here: https://github.com/bshaffer/oauth2-demo-php/blob/master/data/pubkey.pem
         // to test against brentertainment.com
-        'publicKey'                 => 'file:///myproj/data/public.key',
+        'publicKey'               => 'file:///myproj/data/public.key',
+        
+        // Alternatively, you can use automatic discovery as long as your server
+        // has the <issuer>/.well-known/openid-configuration endpoint
+        'issuer'                  => 'http://example.com/oauth2'
     ],
     [
         'signer' => $signer
